@@ -16,8 +16,8 @@ const CourseInformation = memo((props) => {
   
   }, [catalogHas])
 
-  const goVideo = ()=>{
-    props.history.push({pathname:'/coursevideo',state:props.location.state.course_id})
+  const goVideo = (item)=>{
+    props.history.push({pathname:'/coursevideo',state:{subsection:item,courseId: props.location.state.course_id}})
 }
   return (
     <div>
@@ -32,7 +32,7 @@ const CourseInformation = memo((props) => {
                     item.subsections.map((subItem,subIndex)=>{
                       return (
                         <div>
-                          <ul onClick={goVideo}>
+                          <ul onClick={()=>goVideo(subItem)}>
                             <li>
                               <h4>{item.section_order+'.'+subItem.subsection_order+' '+subItem.subsection_name}</h4>
                             </li>

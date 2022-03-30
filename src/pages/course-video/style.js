@@ -28,3 +28,7 @@ export const VideoContentRight = styled.div`
     height: 1000px;
     margin-top: 40px;
 `
+export const QuestionArea = styled.div`
+    margin-top: 25px;
+    background-color: aliceblue;
+`

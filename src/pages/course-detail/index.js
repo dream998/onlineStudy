@@ -1,8 +1,9 @@
 import React, { memo, useState } from 'react'
-import { Breadcrumb, Button, Card } from 'antd';
+import { Breadcrumb, Button, Card, message } from 'antd';
 import { DetailWrapper, OverviewWrapper } from './style';
 import { Image } from 'antd';
 import DetailTab from './detail-tab';
+import { joinCourse } from '../../services/courseService'; 
 
 const CourseDetail = memo((props) => {
 
@@ -34,7 +35,13 @@ const CourseDetail = memo((props) => {
         setActiveTabKey(key)
     }
 
-    const joinCourse = ()=>{
+    const joinThisCourse = ()=>{
+        joinCourse(course_id).then(res=>{
+            message.success('加入课程成功！')
+        }).catch(err=>{
+            message.error('加入课程失败')
+        })
+
         props.history.push({pathname:'/coursestudy',state:props.location.state})
     }
     console.log(props.location.state);
@@ -58,7 +65,7 @@ const CourseDetail = memo((props) => {
                     <h4>{"参与人数： 0"}</h4>
                     <br />
                     <br />
-                    <Button type='primary' style={{ width: '100%', height: '50px', borderRadius: '10px' }} onClick= {joinCourse}>立即加入</Button>
+                    <Button type='primary' style={{ width: '100%', height: '50px', borderRadius: '10px' }} onClick= {joinThisCourse}>立即加入</Button>
                 </div>
             </OverviewWrapper>
             <br />
