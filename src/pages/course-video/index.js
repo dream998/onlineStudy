@@ -3,12 +3,15 @@ import { VideoHeaderWrapper, VideoContentWrapper, VideoContentLeft, VideoContent
 import { LeftOutlined } from '@ant-design/icons'
 import { Card, Button, Radio, Space, Form, message } from 'antd'
 import CourseCatalog from './course-catalog'
+import CourseComment from './course-comment'
 import { getQuestions, getStudyProcess, postAnswers, postStudyProcess } from '../../services/courseService'
 
 
-const CourseVideo = memo((props) => {
+const CourseVideo = (props) => {
     console.log(props.location.state)
-    const { subsection } = props.location.state
+    const [subsection, setSubsection] = useState(props.location.state.subsection)
+    //setSubsection(props.location.state)
+    console.log('subsection', subsection);
     const [activeTabKey, setActiveTabKey] = useState('catalog')
     //保存选择题
     const [choiceQuestions, setChoiceQuestions] = useState([])
@@ -32,10 +35,17 @@ const CourseVideo = memo((props) => {
     const [studyProcessHas, setStudyProcessHas] = useState(false)
     // 视频url
     const [videoUrl, setVideoUrl] = useState('http://' + subsection.subsection_video_url)
+    // useEffect(() => {
+    //     setSubsection(props.location.state)
+
+    // },[subsection])
+
     useEffect(() => {
+
+        console.log('subsection.subsection_id:', subsection.subsection_id);
         getQuestions(subsection.subsection_id).then(
             (questions) => {
-                console.log('请求完成');
+                //console.log('请求完成');
                 setChoiceQuestions(questions[0])
                 setChoiceValues(new Array(questions[0].length))
                 setChoiceQuestionsHas(true)
@@ -52,8 +62,19 @@ const CourseVideo = memo((props) => {
     }, [choiceQuestionsHas, judgeQuestionsHas])
     const videoRef = useRef()
     useEffect(() => {
+        const hints = document.getElementsByClassName('hint')
+        for (let i = 0; i < hints.length; i++) {
+            hints[i].style.display = 'none'
+        }
+    },[videoUrl]
+
+    )
+
+    
+
+    useEffect(() => {
         getStudyProcess(subsection.subsection_id).then((res) => {
-            console.log(res);
+            // console.log(res);
             const newStudyProcess = {
                 videoProcess: res[0].video_process,
                 videoFinished: res[0].video_finished,
@@ -80,12 +101,12 @@ const CourseVideo = memo((props) => {
     }, studyProcessHas)
 
     const onVideoLoader = () => {
-        console.log('加载完成');
-        console.log(studyProcess);
+        //console.log('加载完成');
+        //console.log(studyProcess);
         videoRef.current.currentTime = 10
         document.getElementById('video').currentTime = 10
-        console.log(videoRef.current.currentTime, studyProcess.videoProcess);
-        console.log(document.getElementById('video').currentTime);
+        //console.log(videoRef.current.currentTime, studyProcess.videoProcess);
+        //console.log(document.getElementById('video').currentTime);
     }
     const onTabChange = key => {
         setActiveTabKey(key)
@@ -102,8 +123,8 @@ const CourseVideo = memo((props) => {
         }
     ]
     const contentList = {
-        catalog: <CourseCatalog courseId={props.location.state.courseId} setVideoUrl={setVideoUrl} />,
-        comments: <p>讨论区</p>
+        catalog: <CourseCatalog courseId={props.location.state.courseId} setVideoUrl={setVideoUrl} setSubsection={setSubsection} setChoiceValues = {setChoiceValues} setJudgeValues = {setJudgeValues}/>,
+        comments: <CourseComment courseId={props.location.state.courseId} subsectionId = {props.location.state.subsection.subsection_id}/>
     }
 
     const onChoiceChange = (e, item) => {
@@ -122,8 +143,8 @@ const CourseVideo = memo((props) => {
     }
 
     const commitAnswer = () => {
-        console.log(choiceValues);
-        console.log(judgeValues);
+        //console.log(choiceValues);
+        //console.log(judgeValues);
         const choiceCurrentDivs = document.getElementsByClassName('choiceCurrentDiv')
         const choiceErrorDivs = document.getElementsByClassName('choiceErrorDiv')
         const judgeCurrentDivs = document.getElementsByClassName('judgeCurrentDiv')
@@ -147,18 +168,17 @@ const CourseVideo = memo((props) => {
             }
         }
         // 设置测试题完成度
-        setStudyProcess({ ...studyProcess, testFinished: 1 })
-        new Promise((resolve, reject) => {
-            setStudyProcess({ ...studyProcess, testFinished: 1 })
-            resolve()
-        }).then(() => {
-            console.log('学习进度：', studyProcess);
-            console.log("答案", [choiceValues, judgeValues]);
-            //提交学习进度和答案
-            postStudyProcess(subsection.subsection_id, studyProcess)
-            message.success('学习进度保存成功')
-            postAnswers(subsection.subsection_id, [choiceValues, judgeValues])
-            message.success('回答保存成功')
+        //setStudyProcess({ ...studyProcess, testFinished: 1 })
+
+        setStudyProcess((prev)=>{
+            const newStudyProcess = {...prev,testFinished: 1}
+            postStudyProcess(subsection.subsection_id,newStudyProcess).then(res=>{
+                message.success('学习进度保存成功')
+                postAnswers(subsection.subsection_id,[choiceValues, judgeValues]).then(res=>{
+                    message.success('回答保存成功')
+                })
+            })
+            return newStudyProcess
         })
 
 
@@ -190,11 +210,11 @@ const CourseVideo = memo((props) => {
                 <VideoContentLeft>
                     <h2>C语言的发展概述</h2>
                     <video src={videoUrl} ref={videoRef}
-                        id= 'video'
+                        id='video'
                         width="640" height="480" controls
                         style={{ backgroundColor: 'black' }}
                         onTimeUpdate={recordVideoTime}
-                        // onLoadedMetadata={onVideoLoader}
+                    // onLoadedMetadata={onVideoLoader}
                     ></video>
                     <br />
                     <br />
@@ -219,10 +239,10 @@ const CourseVideo = memo((props) => {
                                                 <Radio value={'D'}>{'D. ' + item.question_item_d}</Radio>
                                             </Space>
                                         </Radio.Group>
-                                        <div className='choiceCurrentDiv' style={{ display: 'none' }}>
+                                        <div className='choiceCurrentDiv hint' style={{ display: 'none' }}>
                                             <p style={{ color: 'lightgreen' }}>您回答正确！</p>
                                         </div>
-                                        <div className='choiceErrorDiv' style={{ display: 'none' }}>
+                                        <div className='choiceErrorDiv hint' style={{ display: 'none' }}>
                                             <p style={{ color: 'red' }}>
                                                 {'正确答案是：' + item.question_answer + ' 您的答案是：' + (choiceValues[index] ? choiceValues[index].answer : '')}
                                             </p>
@@ -248,10 +268,10 @@ const CourseVideo = memo((props) => {
                                             <br />
                                         </Radio.Group>
 
-                                        <div className='judgeCurrentDiv' style={{ display: 'none' }}>
+                                        <div className='judgeCurrentDiv hint' style={{ display: 'none' }}>
                                             <p style={{ color: 'lightgreen' }}>您回答正确！</p>
                                         </div>
-                                        <div className='judgeErrorDiv' style={{ display: 'none' }}>
+                                        <div className='judgeErrorDiv hint' style={{ display: 'none' }}>
                                             <p style={{ color: 'red' }}>
                                                 回答错误！
                                             </p>
@@ -282,6 +302,6 @@ const CourseVideo = memo((props) => {
 
         </div>
     )
-})
+}
 
 export default CourseVideo

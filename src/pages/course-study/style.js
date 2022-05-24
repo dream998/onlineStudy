@@ -49,3 +49,14 @@ export const StudyContent = styled.div`
         margin-left: -10px;
     }
 `
+
+export const ContentWrapper = styled.div`
+    p{
+    overflow : hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    }
+
+`

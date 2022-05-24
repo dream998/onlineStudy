@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect, useRef } from 'react'
 import { CourseCatalogWrapper } from './style'
-import { getCourseCatalog, getStudyProcess } from '../../../services/courseService'
+import { getCourseCatalog, getStudyProcess,  } from '../../../services/courseService'
 const CourseCatalog = memo((props) => {
   //console.log(props.location.state);
   const [catalog, setCatalog] = useState([])
@@ -12,9 +12,9 @@ const CourseCatalog = memo((props) => {
 
 
   useEffect(() => {
-    console.log('获取目录');
+    //console.log('获取目录');
     getCourseCatalog(props.courseId).then(res => {
-      console.log(res)
+      //console.log(res)
       setCatalog(res)
       setcatalogHas(true)
       let count = 0
@@ -24,7 +24,7 @@ const CourseCatalog = memo((props) => {
         }
       }
       setSubsectionCount(count)
-      console.log('小节总数是：', count);
+      //console.log('小节总数是：', count);
 
     })
 
@@ -32,22 +32,22 @@ const CourseCatalog = memo((props) => {
   }, [catalogHas])
 
   useEffect(() => {
-    console.log('根据目录获取进度');
+    //console.log('根据目录获取进度');
     for (let i = 0; i < catalog.length; i++) {
       const section = catalog[i]
-      console.log('章节', section);
+      //console.log('章节', section);
       for (let j = 0; j < section.subsections.length; j++) {
         const subsection = section.subsections[j]
-        console.log(subsection);
+        //console.log(subsection);
 
-        console.log('获取学习进度');
+        //console.log('获取学习进度');
         getStudyProcess(subsection.subsection_id).then(res => {
-          console.log('小节id是', subsection.subsection_id);
+          //console.log('小节id是', subsection.subsection_id);
 
           setStudyProcessList((prev) => {
             const newStudyProcessList = { ...prev }
             newStudyProcessList[subsection.subsection_id] = res
-            console.log(newStudyProcessList);
+            //console.log(newStudyProcessList);
             return newStudyProcessList
 
           })
@@ -63,18 +63,22 @@ const CourseCatalog = memo((props) => {
 
   const onItemClick = (item) => {
     props.setVideoUrl('http://' + item.subsection_video_url)
+    props.setSubsection(item)
+    props.setChoiceValues([])
+    props.setJudgeValues([])
+
   }
 
   const showProcess = (subsectionId) => {
-    console.log('展示进度');
-    console.log(studyProcessList);
+    //console.log('展示进度');
+    //console.log(studyProcessList);
     const process = studyProcessList[subsectionId]
     const keys = Object.keys(studyProcessList)
-    console.log(subsectionId);
+    //console.log(subsectionId);
     const index = keys.indexOf(subsectionId.toString())
-    console.log(keys);
-    console.log('index是',index);
-    console.log('学习进度的长度是',Object.values(studyProcessList).length);
+    //console.log(keys);
+    //console.log('index是',index);
+    //console.log('学习进度的长度是',Object.values(studyProcessList).length);
     const spans = document.getElementsByClassName('status')
     let spanColor = ''
     if (JSON.stringify(studyProcessList) == '{}') {
@@ -98,9 +102,7 @@ const CourseCatalog = memo((props) => {
       return '未完成'
     }
     
-    for(let i = 0; i < spans.length; i++){
-      spans[i].style.color = spanColor
-    }
+   
   }
   return (
     <CourseCatalogWrapper>

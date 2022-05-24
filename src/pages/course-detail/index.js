@@ -1,9 +1,9 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useState, useEffect } from 'react'
 import { Breadcrumb, Button, Card, message } from 'antd';
 import { DetailWrapper, OverviewWrapper } from './style';
 import { Image } from 'antd';
 import DetailTab from './detail-tab';
-import { joinCourse } from '../../services/courseService'; 
+import { joinCourse, getChoiceCourses } from '../../services/courseService'; 
 
 const CourseDetail = memo((props) => {
 
@@ -34,17 +34,33 @@ const CourseDetail = memo((props) => {
     const onTabChange = key =>{
         setActiveTabKey(key)
     }
+    const [joinButtonContent, setJoinButtonContent] = useState('')
+
+    useEffect(() => {
+        getChoiceCourses(course_id).then((res)=>{
+            if(res.length === 0){
+                setJoinButtonContent('加入课程')
+            }else{
+                setJoinButtonContent('已加入，进入学习')
+            }
+        }).catch(err=>{
+
+        })
+    })
+    
+    
 
     const joinThisCourse = ()=>{
-        joinCourse(course_id).then(res=>{
-            message.success('加入课程成功！')
-        }).catch(err=>{
-            message.error('加入课程失败')
-        })
-
+        if(joinButtonContent === '加入课程'){
+            joinCourse(course_id).then(res=>{
+                message.success('加入课程成功！')
+            }).catch(err=>{
+                message.error('加入课程失败')
+            })
+        }
         props.history.push({pathname:'/coursestudy',state:props.location.state})
     }
-    console.log(props.location.state);
+    //console.log(props.location.state);
 
     return (
         <DetailWrapper>
@@ -65,7 +81,7 @@ const CourseDetail = memo((props) => {
                     <h4>{"参与人数： 0"}</h4>
                     <br />
                     <br />
-                    <Button type='primary' style={{ width: '100%', height: '50px', borderRadius: '10px' }} onClick= {joinThisCourse}>立即加入</Button>
+                    <Button type='primary' style={{ width: '100%', height: '50px', borderRadius: '10px' }} onClick= {joinThisCourse}>{joinButtonContent}</Button>
                 </div>
             </OverviewWrapper>
             <br />
