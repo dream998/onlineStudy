@@ -1,6 +1,7 @@
 import React, { memo, useState, useEffect } from 'react'
 import { Card, Space } from 'antd';
 import { ContentWrapper } from './style';
+import { getShares } from '../../services/courseService';
 const CourseComment = memo((props) => {
   const [articles, setArticles] = useState([])
   useEffect(() => {
@@ -31,7 +32,12 @@ const CourseComment = memo((props) => {
 
 
   }, [])
-
+  useEffect(()=>{
+    getShares(props.location.state.course_id).then(res=>{
+      console.log('分享是',res);
+      setArticles(res)
+    })
+  },[])
 
   return (
     <div>

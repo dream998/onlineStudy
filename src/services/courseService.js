@@ -74,3 +74,12 @@ export function getWarning(){
 export function updateWarning(){
     return request.get('/courses/updatewarningstate')
 }
+
+// 发表share
+export function sendShare(value){
+    return request.post('/courses/share',value)
+}
+// 获取shares
+export function getShares(courseId){
+    return request.get(`/courses/${courseId}/share`)
+}

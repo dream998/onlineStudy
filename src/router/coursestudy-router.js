@@ -3,6 +3,7 @@ import CourseAnnouncement from "../pages/course-study/course-announcement"
 import CourseComment from '../pages/course-study/course-comment'
 import CourseTest from '../pages/course-study/course-test'
 import CourseCommentDetail from "../pages/course-study/course-comment-detail"
+import CourseShareWrite from "../pages/course-study/course-share-write"
 const courseRoutes = [
     {
         path: '/coursestudy/info',
@@ -23,6 +24,10 @@ const courseRoutes = [
     {
         path: '/coursestudy/commentdetail',
         component: CourseCommentDetail
+    },
+    {
+        path: '/coursestudy/sharewrite',
+        component: CourseShareWrite
     }
 
 ]

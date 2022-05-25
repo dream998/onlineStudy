@@ -48,6 +48,9 @@ const CourseStudy = memo((props) => {
                         <Menu.Item key='4' style={{height: '60px'}}>
                         <NavLink to={{pathname:'/coursestudy/comment',state:props.location.state}}>分享天地</NavLink>
                         </Menu.Item>
+                        <Menu.Item key='5' style={{height: '60px'}}>
+                        <NavLink to={{pathname:'/coursestudy/sharewrite',state:props.location.state}}>发表分享</NavLink>
+                        </Menu.Item>
                     </Menu>
                     
                 </div>
